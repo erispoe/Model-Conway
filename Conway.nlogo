@@ -1,3 +1,8 @@
+globals [
+  birthlist
+  survivelist
+]
+
 patches-own [
     living?
     living-neighbors 
@@ -5,6 +10,8 @@ patches-own [
 
 to setup
   clear-all
+  reset-ticks
+  setlists
   ask patches [
     ;All patches are dead by default
     set-dead
@@ -13,9 +20,17 @@ to setup
 end
 
 to go
+  ;Count the number of living neighbors
+  no-display
   ask patches [
     count-neighbors
   ]
+  ;Transition according to the transition rules set in the lists
+  ask patches [
+    transition
+    ]
+  display
+  tick
 end
 
 to make-random-setup
@@ -26,6 +41,25 @@ to make-random-setup
       set-living
       ]
     ]
+end
+
+to setlists
+  ;Set the list of rules
+  ;;Number of living neighbors for a cell to become living
+  set birthlist [3]
+  ;;Number of living neighbors for a cell to survive
+  set survivelist [2 3]
+end
+
+
+to draw-cells
+  let erasing? [living?] of patch mouse-xcor mouse-ycor
+  while [mouse-down?]
+    [ ask patch mouse-xcor mouse-ycor
+      [ ifelse erasing?
+        [ set-dead ]
+        [ set-living ] ]
+      display ]
 end
 
 ;;PATCHES PROCEDURES;;
@@ -46,6 +80,20 @@ to count-neighbors
   ;Count and store the number of living neighbors
   set living-neighbors (
     count neighbors with [living?])
+end
+
+to transition
+  ifelse member? living-neighbors birthlist [
+    ;If the number of living neighbors is in the birthlist, set the cell to living
+    set-living
+  ] [
+    ;If not, check if the the number of living neighbors is NOT in the survivelist
+    if not member? living-neighbors survivelist
+    [
+      ;If the number of living neighbors is NOT in the survivelist, set the cell to dead (the cell does not survive)
+      set-dead
+      ]
+  ]
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
@@ -122,6 +170,40 @@ BUTTON
 NIL
 go
 NIL
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
+
+BUTTON
+94
+209
+157
+242
+NIL
+go
+T
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
+
+BUTTON
+31
+169
+127
+202
+NIL
+draw-cells
+T
 1
 T
 OBSERVER
