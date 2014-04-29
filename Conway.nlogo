@@ -131,6 +131,24 @@ NIL
 NIL
 1
 
+PLOT
+1080
+380
+1280
+530
+plot 1
+NIL
+NIL
+0.0
+10.0
+0.0
+10.0
+true
+false
+"" ""
+PENS
+"default" 1.0 0 -16777216 true "" "plot count turtles"
+
 @#$#@#$#@
 ## WHAT IS IT?
 
